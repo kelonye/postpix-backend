@@ -1,0 +1,48 @@
+{
+  "name": "browser-use",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "env-cmd tsx watch src/scripts/jobs.ts",
+    "build": "tsc",
+    "start": "node dist/scripts/jobs.js",
+    "lint": "pnpm run lint:fix && pnpm run lint:ts",
+    "lint:fix": "eslint '**/*.{ts,tsx}' --fix",
+    "lint:ts": "tsc --pretty --noEmit",
+    "prepare": "husky install"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.4.1",
+  "dependencies": {
+    "@ai-sdk/google": "^2.0.7",
+    "@ai-sdk/mistral": "^2.0.7",
+    "@ai-sdk/openai": "^2.0.16",
+    "@aws-sdk/client-s3": "^3.864.0",
+    "@mistralai/mistralai": "^1.9.17",
+    "@supabase/supabase-js": "^2.49.4",
+    "ai": "^5.0.16",
+    "batch": "^0.6.1",
+    "lodash.sample": "^4.2.1",
+    "mime-types": "^3.0.1",
+    "openai": "^4.96.0",
+    "puppeteer": "^24.8.0",
+    "zod": "^4.0.17"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.9.0",
+    "@types/lodash.sample": "^4.2.9",
+    "@types/node": "^20.11.17",
+    "env-cmd": "^10.1.0",
+    "eslint": "^9.9.0",
+    "eslint-plugin-import": "^2.31.0",
+    "globals": "^15.9.0",
+    "husky": "^9.1.7",
+    "tsx": "^4.7.1",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.0.1"
+  }
+}
