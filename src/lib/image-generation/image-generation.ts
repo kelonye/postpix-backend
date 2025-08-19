@@ -95,19 +95,30 @@ export async function generatePostBannerImage(
   return await generatePostImage({
     ...props,
     examples: bannerExamples,
-    prompt: `Create a stunning Studio Ghibli-inspired banner image with the following specifications:
-    
+    prompt: `Create a stunning Studio Ghibli–inspired blog post banner image with the following specifications:
+
 ${props.prompt}
 
-Technical Requirements:
-- Resolution: 1536x1024 pixels
-- Style: Studio Ghibli aesthetic with soft, dreamy lighting and natural elements
-- Composition: Balanced layout with clear focal point
-- Text Overlay: Prominent, readable title text integrated naturally into the design
-- Color Palette: Warm, inviting tones that complement the content theme
-- Quality: High-resolution, professional appearance suitable for web and social media
+**Technical Requirements:**
 
-Ensure the image captures the emotional essence and main theme of the blog post while maintaining the signature Ghibli artistic style.`,
+* **Resolution:** Landscape
+* **Style:** Studio Ghibli aesthetic with soft, dreamy lighting, warm pastel tones, and natural or everyday-life elements
+* **Composition:**
+
+  * Left side: Clear space or panel for text overlay
+  * Right side: Illustrated scene relevant to the blog topic (family, people, nature, or everyday life moments)
+  * Balanced, storybook-style layout with a clear focal point
+* **Text Overlay:**
+
+  * **Main Title:** Bold, ALL CAPS, large size, for contrast
+  * **Subtitle:** Smaller, sentence case, accent color
+  * **Optional Callouts/Labels:** Placed inside props (e.g., a signboard, card, or banner in the illustration), in clean sans-serif text
+* **Color Palette:** Warm, inviting tones that complement the emotional theme
+* **Typography Integration:** Text should be prominent and readable but feel naturally embedded into the illustration (not pasted on top)
+* **Quality:** High-resolution, professional look, optimized for web and social media
+
+**Creative Goal:**
+Ensure the banner captures both the **emotional essence and main theme of the blog post** while maintaining a **Ghibli-inspired, family-friendly artistic style** with clear, professional text presentation.`,
   });
 }
 
@@ -122,12 +133,11 @@ export async function generatePostSectionImage(
 ${props.prompt}
 
 Technical Requirements:
-- Resolution: 1536x1024 pixels
+- Resolution: Landscape
 - Style: Studio Ghibli aesthetic with gentle, atmospheric lighting
 - Composition: Engaging visual storytelling that supports the content
 - Color Palette: Harmonious colors that enhance readability and emotional impact
 - Quality: High-resolution, professional appearance
-- Cultural Sensitivity: Inclusive representation appropriate for the target audience
 
 The image should illustrate the specific section content while maintaining visual consistency with the overall blog post theme.`,
   });
@@ -202,7 +212,7 @@ For each image, provide:
   * Specific color palette and mood
   * Key visual elements and composition
   * Text overlay requirements (for banner)
-  * Cultural context and relevance
+  * Cultural context and relevance. Inclusive representation appropriate for the target audience e.g. if post is about the tech community in Uganda, the people should be of Ugandan descent.
 
 ## Style Guidelines:
 - Embrace Studio Ghibli's signature style: soft lighting, natural elements, emotional storytelling
