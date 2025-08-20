@@ -171,10 +171,7 @@ export class Job {
   async initialize() {
     logger.info('generating title and metadata');
 
-    const [title, metadata] = await Promise.all([
-      this.generateTitle(),
-      this.generateBannerAndSectionImages(),
-    ]);
+    const metadata = await this.generateBannerAndSectionImages();
 
     logger.info('updating content');
     const updatedContent = await this.updateContent(metadata);
@@ -183,7 +180,6 @@ export class Job {
     await supabase
       .from('post')
       .update({
-        title,
         metadata,
         updated_content: updatedContent,
         updated_at: new Date().toISOString(),
@@ -285,17 +281,6 @@ export class Job {
         status: 'processed',
       })
       .eq('id', this.post.id);
-  }
-
-  async generateTitle() {
-    logger.info('generating title');
-    const title = await generateText({
-      systemPrompt: `You are a helpful assistant that generates titles for blog posts. Only return the title, no other text.`,
-      examples: new Map(),
-      userPrompt: `Generate a title for the following post: ${this.post.content}`,
-    });
-    logger.info('generated title', title);
-    return title;
   }
 
   async generateBannerAndSectionImages() {

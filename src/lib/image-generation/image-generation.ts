@@ -1,7 +1,6 @@
 import mimeTypes from 'mime-types';
 import { experimental_generateImage as generateImage } from 'ai';
 import { openai } from '@ai-sdk/openai';
-import { SupabaseClient } from '@supabase/supabase-js';
 import { z } from 'zod';
 
 import { generateObject, generateText } from '../ai/chat/completion.js';
@@ -36,17 +35,18 @@ type GeneratePostImageParams = {
   postId: string;
   prompt: string;
   slug: string;
-  examples: Map<string, string>;
 };
 
 export async function suggestPostBannerAndSectionImages({
   idealNoOfSectionImages,
   postContent,
   postId,
+  postTitle,
 }: {
   idealNoOfSectionImages: number;
   postContent: string;
   postId: string;
+  postTitle: string;
 }): Promise<PostMetadata> {
   const metadata = await generateObject<PostMetadata>({
     systemPrompt: getSuggestPostBannerAndSectionImagesSystemPrompt(
@@ -56,6 +56,7 @@ export async function suggestPostBannerAndSectionImages({
     userPrompt: getSuggestPostBannerAndSectionImagesUserPrompt({
       postContent,
       postId,
+      postTitle,
     }),
     schema: postMetadataSchema,
   });
@@ -90,11 +91,10 @@ export async function updateMarkdownWithImagePlacements({
 }
 
 export async function generatePostBannerImage(
-  props: Omit<GeneratePostImageParams, 'examples'>,
+  props: GeneratePostImageParams,
 ): Promise<string> {
   return await generatePostImage({
     ...props,
-    examples: bannerExamples,
     prompt: `Create a stunning Studio Ghibli–inspired blog post banner image with the following specifications:
 
 ${props.prompt}
@@ -123,11 +123,10 @@ Ensure the banner captures both the emotional essence and main theme of the blog
 }
 
 export async function generatePostSectionImage(
-  props: Omit<GeneratePostImageParams, 'examples'>,
+  props: GeneratePostImageParams,
 ): Promise<string> {
   return await generatePostImage({
     ...props,
-    examples: sectionsImagesExamples,
     prompt: `Create a beautiful Studio Ghibli-inspired section image with the following specifications:
     
 ${props.prompt}
@@ -147,7 +146,6 @@ async function generatePostImage({
   postId,
   prompt,
   slug,
-  examples,
 }: GeneratePostImageParams): Promise<string> {
   logger.info({
     message: 'Generating post image',
@@ -186,6 +184,12 @@ function getSuggestPostBannerAndSectionImagesSystemPrompt(
   idealNoOfSectionImages: number,
 ) {
   return `You are an expert content strategist and visual designer specializing in creating compelling blog post imagery. Your task is to generate a banner image and ${idealNoOfSectionImages} section images that perfectly complement the provided blog post content.
+
+## Parameters:
+You will be given a blog post id, title and content.
+- Post ID
+- Post Title
+- Post Content
 
 ## Banner Image Requirements:
 - Must include the blog post title as prominent text overlay
@@ -259,12 +263,16 @@ Return ONLY the updated markdown content without any additional formatting, code
 function getSuggestPostBannerAndSectionImagesUserPrompt({
   postContent,
   postId,
+  postTitle,
 }: {
   postContent: string;
   postId: string;
+  postTitle: string;
 }) {
   return `Post ID: ${postId}
-  
+
+Post Title: ${postTitle}
+
 Post Content:
 \`\`\`markdown
 ${postContent}
@@ -290,29 +298,3 @@ ${JSON.stringify(metadata)}
 \`\`\`
 `;
 }
-
-const bannerExamples: Map<string, string> = new Map([
-  [
-    `Banner for "
-Best Family Medical Cover in Kenya (2025): Compare Top Health Plans for Real-Life Needs" blog post featuring a happy family comparing health plans, highlighting NHIF acceptance in Kenya.`,
-    'https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  ],
-  [
-    'Banner for "How to start a youtube channel for kids" blog post.',
-    'how-to-start-a-youtube-channel-for-kids.webp',
-  ],
-  [
-    'Banner for "Family conversation on the porch" blog post. The banner features an illustration of a man and woman sitting together on a porch, discussing family dignity and the importance of conversations about care, love, independence, and peace of mind.',
-    'family-conversation-porch-illustration.jpg',
-  ],
-]);
-
-const sectionsImagesExamples: Map<string, string> = new Map([
-  [
-    `Banner for "
-Best Family Medical Cover in Kenya (2025): Compare Top Health Plans for Real-Life Needs" blog post featuring a happy family comparing health plans, highlighting NHIF acceptance in Kenya.`,
-    'concerned-mother-phone-sick-child.jpg',
-  ],
-  ['', 'registration-payment-infographic.png'],
-  ['', 'healthcare-costs-comparison-nhif-sha.png'],
-]);
