@@ -4,7 +4,6 @@ import { supabase } from './supabase.js';
 import { IS_PROD } from './constants.js';
 import { Tables } from './db-types.js';
 import { logger } from './logger.js';
-import { generateText } from './ai/chat/completion.js';
 import {
   suggestPostBannerAndSectionImages,
   updateMarkdownWithImagePlacements,
@@ -289,6 +288,7 @@ export class Job {
       idealNoOfSectionImages: this.post.ideal_no_of_section_images,
       postContent: this.post.content,
       postId: this.post.id,
+      postTitle: this.post.title || '',
     });
     logger.info('generated banner and section images');
     return metadata;
