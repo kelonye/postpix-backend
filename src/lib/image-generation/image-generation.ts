@@ -118,7 +118,7 @@ ${props.prompt}
 * **Quality:** High-resolution, professional look, optimized for web and social media
 
 **Creative Goal:**
-Ensure the banner captures both the emotional essence and main theme of the blog post, while combining a Studio Ghibli–inspired illustration with professional text design placed in a light-colored rounded card background.`,
+Ensure the banner captures both the emotional essence and main theme of the blog post, while combining a Studio Ghibli–inspired illustration with professional text design placed in a light-colored rounded card background, and with some margin on the left edge.`,
   });
 }
 
