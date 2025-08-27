@@ -1,4 +1,5 @@
 import fs from 'fs/promises';
+import path from 'path';
 
 import mimeTypes from 'mime-types';
 import { experimental_generateImage as generateImage } from 'ai';
@@ -160,14 +161,12 @@ async function generatePostImage({
   let contentType = 'image/png';
   let imageBuffer: Buffer | null = null;
 
-  await fs.mkdir('data', { recursive: true });
-
   const localPath = `data/${s3Key}`;
   try {
     imageBuffer = await fs.readFile(localPath);
   } catch (error) {
     logger.info({
-      message: 'Image not found in S3',
+      message: 'Image not found in local cache',
       s3Key,
     });
 
@@ -182,14 +181,15 @@ async function generatePostImage({
     contentType = image.image.mediaType;
     imageBuffer = Buffer.from(image.image.base64, 'base64');
 
+    await fs.mkdir(path.dirname(localPath), { recursive: true });
     await fs.writeFile(localPath, imageBuffer);
-
-    logger.info({
-      message: 'Uploading post image to S3',
-      s3Key,
-      contentType,
-    });
   }
+
+  logger.info({
+    message: 'Uploading post image to S3',
+    s3Key,
+    contentType,
+  });
 
   const publicUrl = await uploadToS3({
     key: s3Key,
