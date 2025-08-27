@@ -1,3 +1,5 @@
+import fs from 'fs/promises';
+
 import mimeTypes from 'mime-types';
 import { experimental_generateImage as generateImage } from 'ai';
 import { openai } from '@ai-sdk/openai';
@@ -153,27 +155,46 @@ async function generatePostImage({
     slug,
   });
 
-  const image = await generateImage({
-    model: openai.image('gpt-image-1'),
-    prompt,
-    size: '1536x1024',
-  });
+  let extension = 'png';
+  let s3Key = `posts/${postId}/${slug}.${extension}`;
+  let contentType = 'image/png';
+  let imageBuffer: Buffer | null = null;
 
-  const extension = mimeTypes.extension(image.image.mediaType);
-  const s3Key = `posts/${postId}/${slug}.${extension}`;
+  await fs.mkdir('data', { recursive: true });
 
-  logger.info({
-    message: 'Uploading post image to S3',
-    s3Key,
-    contentType: image.image.mediaType,
-  });
+  const localPath = `data/${s3Key}`;
+  try {
+    imageBuffer = await fs.readFile(localPath);
+  } catch (error) {
+    logger.info({
+      message: 'Image not found in S3',
+      s3Key,
+    });
 
-  const imageBuffer = Buffer.from(image.image.base64, 'base64');
+    const image = await generateImage({
+      model: openai.image('gpt-image-1'),
+      prompt,
+      size: '1536x1024',
+    });
+
+    extension = mimeTypes.extension(image.image.mediaType);
+    s3Key = `posts/${postId}/${slug}.${extension}`;
+    contentType = image.image.mediaType;
+    imageBuffer = Buffer.from(image.image.base64, 'base64');
+
+    await fs.writeFile(localPath, imageBuffer);
+
+    logger.info({
+      message: 'Uploading post image to S3',
+      s3Key,
+      contentType,
+    });
+  }
 
   const publicUrl = await uploadToS3({
     key: s3Key,
     body: imageBuffer,
-    contentType: image.image.mediaType,
+    contentType,
     assetsUrl: 'https://assets.postpix.ai',
   });
 
